@@ -7,10 +7,10 @@ tinygo: build/tinygo
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),FreeBSD)
-	MAKE = gmake
+    MAKE = gmake
 endif
 ifeq ($(UNAME_S),Linux)
-	MAKE = make
+    MAKE = make
     START_GROUP = -Wl,--start-group
     END_GROUP = -Wl,--end-group
 endif
