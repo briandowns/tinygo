@@ -23,7 +23,8 @@ build tools to be built. Go is of course necessary to build TinyGo itself.
   * [Ninja](https://ninja-build.org/)
 
 The rest of this guide assumes you're running Linux, but it should be equivalent
-on a different system like Mac.
+on a different system like Mac.  If on a FreeBSD system, replace any call to 
+`make` with `gmake`.
 
 ## Download the source
 

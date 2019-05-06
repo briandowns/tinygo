@@ -10,6 +10,7 @@ ifeq ($(UNAME_S),FreeBSD)
 	MAKE = gmake
 endif
 ifeq ($(UNAME_S),Linux)
+	MAKE = make
     START_GROUP = -Wl,--start-group
     END_GROUP = -Wl,--end-group
 endif
