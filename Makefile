@@ -5,18 +5,20 @@ tinygo: build/tinygo
 
 .PHONY: all tinygo build/tinygo test llvm-build llvm-source clean fmt gen-device gen-device-nrf gen-device-avr
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),FreeBSD)
+	MAKE = gmake
+endif
+ifeq ($(UNAME_S),Linux)
+    START_GROUP = -Wl,--start-group
+    END_GROUP = -Wl,--end-group
+endif
 # Default build and source directories, as created by `make llvm-build`.
 LLVM_BUILDDIR ?= llvm-build
 CLANG_SRC ?= llvm/tools/clang
 LLD_SRC ?= llvm/tools/lld
 
 LLVM_COMPONENTS = all-targets analysis asmparser asmprinter bitreader bitwriter codegen core coroutines debuginfodwarf executionengine instrumentation interpreter ipo irreader linker lto mc mcjit objcarcopts option profiledata scalaropts support target
-
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-    START_GROUP = -Wl,--start-group
-    END_GROUP = -Wl,--end-group
-endif
 
 CLANG_LIBS = $(START_GROUP) $(abspath $(LLVM_BUILDDIR))/lib/libclang.a -lclangAnalysis -lclangARCMigrate -lclangAST -lclangASTMatchers -lclangBasic -lclangCodeGen -lclangCrossTU -lclangDriver -lclangDynamicASTMatchers -lclangEdit -lclangFormat -lclangFrontend -lclangFrontendTool -lclangHandleCXX -lclangHandleLLVM -lclangIndex -lclangLex -lclangParse -lclangRewrite -lclangRewriteFrontend -lclangSema -lclangSerialization -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangStaticAnalyzerFrontend -lclangTooling -lclangToolingASTDiff -lclangToolingCore -lclangToolingInclusions -lclangToolingRefactor $(END_GROUP) -lstdc++
 
@@ -78,7 +80,7 @@ llvm-build: llvm-build/build.ninja
 
 # Build the Go compiler.
 build/tinygo:
-	@if [ ! -f llvm-build/bin/llvm-config ]; then echo "Fetch and build LLVM first by running:\n  make llvm-source\n  make llvm-build"; exit 1; fi
+	@if [ ! -f llvm-build/bin/llvm-config ]; then echo "Fetch and build LLVM first by running:\n  $(MAKE) llvm-source\n  $(MAKE) llvm-build"; exit 1; fi
 	CGO_CPPFLAGS="$(CGO_CPPFLAGS)" CGO_CXXFLAGS="$(CGO_CXXFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS)" go build -o build/tinygo -tags byollvm .
 
 test:

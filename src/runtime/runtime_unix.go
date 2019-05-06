@@ -1,4 +1,4 @@
-// +build darwin linux,!avr,!cortexm
+// +build darwin freebsd linux,!avr,!cortexm
 
 package runtime
 

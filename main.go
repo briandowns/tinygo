@@ -29,6 +29,8 @@ type commandError struct {
 	Err  error
 }
 
+// Error creates and returns a string of the commandError that contains
+// a message, the file the error occurred in, and the error itself.
 func (e *commandError) Error() string {
 	return e.Msg + " " + e.File + ": " + e.Err.Error()
 }
@@ -75,8 +77,7 @@ func Compile(pkgName, outpath string, spec *TargetSpec, config *BuildConfig, act
 	}
 
 	// Compile Go code to IR.
-	err = c.Compile(pkgName)
-	if err != nil {
+	if err = c.Compile(pkgName); err != nil {
 		return err
 	}
 	if config.printIR {
@@ -87,17 +88,17 @@ func Compile(pkgName, outpath string, spec *TargetSpec, config *BuildConfig, act
 		return errors.New("verification error after IR construction")
 	}
 
-	err = interp.Run(c.Module(), c.TargetData(), config.dumpSSA)
-	if err != nil {
+	if err = interp.Run(c.Module(), c.TargetData(), config.dumpSSA); err != nil {
 		return err
 	}
 	if err := c.Verify(); err != nil {
 		return errors.New("verification error after interpreting runtime.initAll")
 	}
 
-	if spec.GOOS != "darwin" {
+	if spec.GOOS != "darwin" || spec.GOOS != "freebsd" {
 		c.ApplyFunctionSections() // -ffunction-sections
 	}
+
 	if err := c.Verify(); err != nil {
 		return errors.New("verification error after applying function sections")
 	}

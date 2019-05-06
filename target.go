@@ -91,12 +91,7 @@ func (spec *TargetSpec) copyProperties(spec2 *TargetSpec) {
 // load reads a target specification from the JSON in the given io.Reader. It
 // may load more targets specified using the "inherits" property.
 func (spec *TargetSpec) load(r io.Reader) error {
-	err := json.NewDecoder(r).Decode(spec)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return json.NewDecoder(r).Decode(spec)
 }
 
 // loadFromName loads the given target from the targets/ directory inside the
@@ -216,7 +211,7 @@ func defaultTarget(goos, goarch, triple string) (*TargetSpec, error) {
 		GDB:       "gdb",
 		GDBCmds:   []string{"run"},
 	}
-	if goos == "darwin" {
+	if goos == "darwin" || goos == "freebsd" {
 		spec.LDFlags = append(spec.LDFlags, "-Wl,-dead_strip")
 	} else {
 		spec.LDFlags = append(spec.LDFlags, "-no-pie", "-Wl,--gc-sections") // WARNING: clang < 5.0 requires -nopie
